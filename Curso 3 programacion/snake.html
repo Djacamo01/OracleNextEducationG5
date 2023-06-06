@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tetris</title>
+    <style>
+        /* Estilos CSS */
+        body {
+            font-family: Arial, sans-serif;
+        }
+        #tetrisCanvas {
+            border: 1px solid #000;
+            background-color: #FFF;
+        }
+        #scoreBoard {
+            font-size: 24px;
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="tetrisCanvas" width="240" height="400"></canvas>
+    <div id="scoreBoard">Score: 0</div>
+
+    <script>
+        // Variables y constantes
+        const canvas = document.getElementById("tetrisCanvas");
+        const context = canvas.getContext("2d");
+        const scoreBoard = document.getElementById("scoreBoard");
+        const ROWS = 20;
+        const COLS = 10;
+        const BLOCK_SIZE = 20;
+        const EMPTY_BLOCK = "#FFF";
+        const PIECES = [
+            [Z, "#f44336"],
+            [S, "#4caf50"],
+            [T, "#9c27b0"],
+            [O, "#ffeb3b"],
+            [L, "#ff9800"],
+            [I, "#03a9f4"],
+            [J, "#795548"]
+        ];
+        let board = createEmptyBoard();
+        let currentPiece;
+        let currentPieceColor;
+        let currentPieceX;
+        let currentPieceY;
+        let score = 0;
+        let gameInterval;
+        let isGameOver = false;
+
+        // Crear un tablero vacío
+        function createEmptyBoard() {
+            let board = [];
+            for (let row = 0; row < ROWS; row++) {
+                board[row] = [];
+                for (let col = 0; col < COLS; col++) {
+                    board[row][col] = EMPTY_BLOCK;
+                }
+            }
+            return board;
+        }
+
+        // Dibujar el tablero y las piezas
+        function draw() {
+            // Limpiar el canvas
+            context.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Dibujar el tablero
+            for (let row = 0; row < ROWS; row++) {
+                for (let col = 0; col < COLS; col++) {
+                    drawBlock(col, row, board[row][col]);
+                }
+            }
+
+            // Dibujar la pieza actual
+            if (currentPiece) {
+                for (let row = 0; row < currentPiece.length; row++) {
+                    for (let col = 0; col < currentPiece[row].length; col++) {
+                        if (currentPiece[row][col]) {
+                            drawBlock(currentPieceX + col, currentPieceY + row, currentPieceColor);
+                        }
+                    }
+                }
+            }
+        }
+
+        // Dibujar un bloque en una posición específica
+        function drawBlock(x, y, color) {
+            context.fillStyle = color;
+            context.fillRect(x * BLOCK_SIZE, y * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
+            context.strokeStyle = "#000";
+            context.strokeRect(x * BLOCK_SIZE, y * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
+        }
+
+        // Generar una nueva pieza aleatoria
+        function generateRandomPiece() {
+            const randomIndex = Math.floor(Math.random() * PIECES.length);
+            const piece = PIECES[randomIndex][0];
+            const color = PIECES[randomIndex][1];
+            return {
+                piece: piece,
+                color: color,
+                x: Math.floor(COLS / 2) - Math.floor(piece[0].length / 2),
+                y: 0
+            };
+        }
+
+        // Colocar la pieza actual en el tablero
+        function placePiece() {
+            for (let row = 0; row < currentPiece.length; row++) {
+                for (let col = 0; col < currentPiece[row].length; col++) {
+                    if (currentPiece[row][col]) {
+                        const boardX = currentPieceX + col;
+                        const boardY = currentPieceY + row;
+                        board[boardY][boardX] = currentPieceColor;
+                    }
+                }
+            }
+        }
+
+        // Verificar si se puede mover la pieza hacia la izquierda
+        function canMoveLeft() {
+            for (let row = 0; row < currentPiece.length; row++) {
+                for (let col = 0; col < currentPiece[row].length; col++) {
+                    if (currentPiece[row][col]) {
+                        const nextX = currentPieceX + col - 1;
+                        if (nextX < 0 || board[currentPieceY + row][nextX] !== EMPTY_BLOCK) {
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+
+        // Verificar si se puede mover la pieza hacia la derecha
+        function canMoveRight() {
+            for (let row = 0; row < currentPiece.length; row++) {
+                for (let col = 0; col < currentPiece[row].length; col++) {
+                    if (currentPiece[row][col]) {
+                        const nextX = currentPieceX + col + 1;
+                        if (nextX >= COLS || board[currentPieceY + row][nextX] !== EMPTY_BLOCK) {
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+
+        // Verificar si se puede mover la pieza hacia abajo
+        function canMoveDown() {
+            for (let row = 0; row < currentPiece.length; row++) {
+                for (let col = 0; col < currentPiece[row].length; col++) {
+                    if (currentPiece[row][col]) {
+                        const nextY = currentPieceY + row + 1;
+                        if (nextY >= ROWS || board[nextY][currentPieceX + col] !== EMPTY_BLOCK) {
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+
+        // Mover la pieza hacia la izquierda
+        function moveLeft() {
+            if (canMoveLeft()) {
+                currentPieceX--;
+            }
+        }
+
+        // Mover la pieza hacia la derecha
+        function moveRight() {
+            if (canMoveRight()) {
+                currentPieceX++;
+            }
+        }
+
+        // Mover la pieza hacia abajo
+        function moveDown() {
+            if (canMoveDown()) {
+                currentPieceY++;
+            } else {
+                placePiece();
+                clearLines();
+                if (!isGameOver) {
+                    spawnNextPiece();
+                }
+            }
+        }
+
+        // Rotar la pieza en sentido horario
+        function rotatePiece() {
+            const nextPiece = rotateMatrix(currentPiece);
+            if (isValidMove(nextPiece, currentPieceX, currentPieceY)) {
+                currentPiece = nextPiece;
+            }
+        }
+
+        // Verificar si una rotación es válida
+        function isValidMove(piece, x, y) {
+            for (let row = 0; row < piece.length; row++) {
+                for (let col = 0; col < piece[row].length; col++) {
+                    if (piece[row][col]) {
+                        const boardX = x + col;
+                        const boardY = y + row;
+                        if (boardX < 0 || boardX >= COLS || boardY >= ROWS || board[boardY][boardX] !== EMPTY_BLOCK) {
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+
+        // Rotar una matriz en sentido horario
+        function rotateMatrix(matrix) {
+            const rotatedMatrix = [];
+            const rows = matrix.length;
+            const cols = matrix[0].length;
+            for (let col = 0; col < cols; col++) {
+                rotatedMatrix[col] = [];
+                for (let row = rows - 1; row >= 0; row--) {
+                    rotatedMatrix[col][rows - row - 1] = matrix[row][col];
+                }
+            }
+            return rotatedMatrix;
+        }
+
+        // Eliminar líneas completas y sumar puntos
+        function clearLines() {
+            let linesCleared = 0;
+            for (let row = ROWS - 1; row >= 0; row--) {
+                if (board[row].every(block => block !== EMPTY_BLOCK)) {
+                    board.splice(row, 1);
+                    board.unshift(Array(COLS).fill(EMPTY_BLOCK));
+                    linesCleared++;
+                }
+            }
+            if (linesCleared > 0) {
+                score += calculateScore(linesCleared);
+                scoreBoard.innerHTML = "Score: " + score;
+            }
+        }
+
+        // Calcular la puntuación en función del número de líneas eliminadas
+        function calculateScore(lines) {
+            switch (lines) {
+                case 1:
+                    return 40;
+                case 2:
+                    return 100;
+                case 3:
+                    return 300;
+                case 4:
+                    return 1200;
+                default:
+                    return 0;
+            }
+        }
+
+        // Generar la siguiente pieza
+        function spawnNextPiece() {
+            currentPiece = generateRandomPiece();
+            currentPieceColor = currentPiece.color;
+            currentPieceX = currentPiece.x;
+            currentPieceY = currentPiece.y;
+            if (!isValidMove(currentPiece.piece, currentPieceX, currentPieceY)) {
+                gameOver();
+            }
+        }
+
+        // Finalizar el juego
+        function gameOver() {
+            isGameOver = true;
+            clearInterval(gameInterval);
+            context.fillStyle = "#000";
+            context.fillRect(0, canvas.height / 2 - 20, canvas.width, 40);
+            context.fillStyle = "#FFF";
+            context.font = "24px Arial";
+            context.fillText("Game Over", canvas.width / 2 - 60, canvas.height / 2 + 8);
+        }
+
+        // Iniciar el juego
+        function startGame() {
+            score = 0;
+            scoreBoard.innerHTML = "Score: " + score;
+            board = createEmptyBoard();
+            isGameOver = false;
+            spawnNextPiece();
+            gameInterval = setInterval(() => {
+                moveDown();
+                draw();
+            }, 500);
+        }
+
+        // Controlar el movimiento y rotación de la pieza con las teclas
+        document.addEventListener("keydown", event => {
+            if (!isGameOver) {
+                if (event.code === "ArrowLeft") {
+                    moveLeft();
+                } else if (event.code === "ArrowRight") {
+                    moveRight();
+                } else if (event.code === "ArrowDown") {
+                    moveDown();
+                } else if (event.code === "ArrowUp") {
+                    rotatePiece();
+                }
+                draw();
+            }
+            
+        });
+
+        // Iniciar el juego al cargar la página
+        startGame();
+    </script>
+</body>
+</html>

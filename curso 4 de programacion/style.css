@@ -1,0 +1,53 @@
+body{}  
+.tituloCentralizado{text-align: center;font-family: 'Times New Roman';font-size: 30px;background-color: rgb(73, 180, 241);
+
+}
+.tituloPrincipal{padding-left: 30px;font-family: 'Times New Roman';font-size: 30px}    
+#presentacion{
+    background-color: rgb(231, 172, 104);
+    font-family: Arial;
+    font-size: 13px;
+    text-align: left;
+    position: relative;
+
+}
+
+
+    
+#fotobarberia{
+    position: relative;
+    margin: auto;
+    width: 880px;
+    height: 300px;
+    border: 
+    3px solid rgb(255, 26, 26);
+
+   
+}
+.principal{background-color: rgb(94, 12, 12);
+    padding: 20px;}
+
+
+p{text-align: center;font-family: Arial;font-size: 16px;
+    background-color: rgb(219, 231, 104);
+}
+   
+em strong{color: rgb(252, 56, 30);}
+
+#lista{font-style: italic;
+
+    
+}
+
+ul{display: inline-block;
+vertical-align: top;
+width: 20%;
+margin-right: 15%;
+}
+.nuestrasDiferernciales{
+    width: 50%;
+
+    border: 
+    3px solid rgb(255, 26, 26);}
+.diferenciales{background-color: blueviolet;
+padding: 30px;}

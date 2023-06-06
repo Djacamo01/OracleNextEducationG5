@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <canvas width="600" height="400"></canvas>
+    <script>
+
+        /*
+        function dibujarCuadrado(x,y,COLOR){
+        var pantalla =document.querySelector("canvas");
+        var pincel = pantalla.getContext("2d");
+        pincel.fillStyle=COLOR;
+        pincel.fillRect(x,y,50,50);
+        pincel.strokeStyle="black";
+        pincel.strokeRect(x,y,50,50);
+        }
+       
+        var x=0;
+        
+        while (x<600){
+        dibujarCuadrado(x,50,"blue");
+        dibujarCuadrado(x,100,"yellow");
+        dibujarCuadrado(x,300,"red");
+        x=x+50;
+        }
+        
+        for(x=0; x<600; x=x+50){
+        dibujarCuadrado(x,0,"blue");
+        dibujarCuadrado(x,200,"yellow");
+        dibujarCuadrado(x,350,"red");
+        }     
+        */
+        var pantalla = document.querySelector("canvas");
+    var pincel = pantalla.getContext("2d");
+    pincel.fillStyle = "lightgray";
+    pincel.fillRect(0, 0, 600, 400);
+
+    function dibujarCirculo(x, y, radio, color) {
+
+        pincel.fillStyle = color;
+        pincel.beginPath();
+        pincel.arc(x, y, radio, 0, 2*3.14);
+        pincel.fill();
+    }
+    function dibujarFlor(x,y){
+    dibujarCirculo(x,y+20,13,"red");
+    dibujarCirculo(x,y,13,"yellow");
+    dibujarCirculo(x,y-20,13,"green");
+    dibujarCirculo(x+20,y,13,"blue");
+    dibujarCirculo(x-20,y,13,"brown");
+    }
+dibujarFlor(50,100)
+
+
+    </script>
+</body>
+</html>

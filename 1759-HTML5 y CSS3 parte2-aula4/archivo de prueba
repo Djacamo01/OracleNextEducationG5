@@ -1,0 +1,58 @@
+using System;
+
+namespace primera_aplicacion
+{
+    class Program
+    {
+        static void Main(string[] args)
+
+
+        {
+            int anhioActual;
+            int persona1;
+            int persona2;
+            int persona3;
+            int persona4;
+            int promedioEdad;
+            string nombrePersona1;
+            string nombrePersona2;
+            string nombrePersona3;
+            string nombrePersona4;
+
+            Console.WriteLine("en que año estamos");
+            anhioActual = int.Parse(Console.ReadLine());
+
+            Console.WriteLine("Como te llamas?");
+            nombrePersona1 = Console.ReadLine();
+            Console.WriteLine("en que año naciste?");
+            persona1 = int.Parse(Console.ReadLine());
+
+            Console.WriteLine("Como te llamas?");
+            nombrePersona2 = Console.ReadLine();
+            Console.WriteLine("en que año naciste?");
+            persona2 = int.Parse(Console.ReadLine());
+
+            Console.WriteLine("Como te llamas?");
+            nombrePersona3 = Console.ReadLine();
+            Console.WriteLine("en que año naciste?");
+            persona3 = int.Parse(Console.ReadLine());
+
+            Console.WriteLine("Como te llamas?");
+            nombrePersona4 = Console.ReadLine();
+            Console.WriteLine("en que año naciste?");
+            persona4 = int.Parse(Console.ReadLine());
+
+            Console.WriteLine("la persona " + nombrePersona1 + " nacio hace " + (anhioActual - persona1) + " años");
+            Console.WriteLine("la persona " + nombrePersona2 + " nacio hace " + (anhioActual - persona2) + " años");
+            Console.WriteLine("la persona " + nombrePersona3 + " nacio hace " + (anhioActual - persona3) + " años");
+            Console.WriteLine("la persona " + nombrePersona4 + " nacio  hace" + (anhioActual - persona4) + " años");
+            promedioEdad = (persona1 + persona2 + persona3 + persona4) / 4;
+
+            Console.WriteLine("el promedio de edad de las personas es de  " + promedioEdad);
+
+            Console.ReadKey(true);
+        }
+
+
+    }
+}
